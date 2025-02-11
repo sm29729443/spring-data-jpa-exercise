@@ -4,7 +4,10 @@ import com.tong.springdatajpaexercise.entity.DepartmentEntity;
 import com.tong.springdatajpaexercise.entity.UserEntity;
 import com.tong.springdatajpaexercise.repository.DepartmentRepository;
 import com.tong.springdatajpaexercise.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,12 +15,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 @RestController
+@Slf4j
 public class TestController {
 
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private DepartmentRepository departmentRepository;
+    @Autowired
+    private DepartmentEntity departmentEntityTest;
 
     @GetMapping("/testInsert")
     public void testUser() {
@@ -69,5 +75,21 @@ public class TestController {
         // 写入用户信息
         userRepository.saveAll(Stream.of(entity1, entity2).collect(Collectors.toList()));
         userRepository.flush();
+    }
+
+    @GetMapping("/testGet")
+    public void testGet() {
+        DepartmentEntity departmentEntity = departmentRepository.findById(1L).get();
+        Assert.notNull(departmentEntity, "departmentEntity is null");
+        departmentEntityTest = departmentEntity;
+        log.info("URL: /testGet, departmentEntity: {}", departmentEntity);
+
+    }
+    @GetMapping("/testMerge")
+    public void testMerge() {
+        DepartmentEntity departmentEntity = new DepartmentEntity();
+        BeanUtils.copyProperties(departmentEntityTest, departmentEntity);
+        departmentEntity.setUpdateTime(null);
+        departmentRepository.save(departmentEntity);
     }
 }
