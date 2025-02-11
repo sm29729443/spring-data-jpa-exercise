@@ -1,6 +1,7 @@
 package com.tong.springdatajpaexercise.entity;
 
 
+import com.tong.springdatajpaexercise.listener.MyEntityListener;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
@@ -12,7 +13,7 @@ import java.util.Date;
 @Data
 @Entity
 @Table(name = "user")
-@EntityListeners(value = AuditingEntityListener.class)
+@EntityListeners(value = {AuditingEntityListener.class, MyEntityListener.class})
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,8 +23,10 @@ public class UserEntity {
     @ManyToOne(optional = false)
     @JoinColumn(name = "department")
     private DepartmentEntity department;
+    @Column(nullable = false)
     @CreatedDate
     private Date createTime;
+    @Column(nullable = false)
     @LastModifiedDate
     private Date updateTime;
 
